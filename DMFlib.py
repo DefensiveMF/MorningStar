@@ -136,7 +136,7 @@ def WriteToExcel(company,companyinfo,month,year):
     print 'added',companyinfo['name'],'to',month,year+'.xlsx'
     return;
 
-def Retrieve52WeekLows()
+def Retrieve52WeekLows():
     url = 'http://247wallst.com/investing/'
     webdata = urllib.urlopen(url).read()
     links = re.findall('href="(http:.*?-52-week-low-club/)"', webdata)
@@ -149,7 +149,7 @@ def Retrieve52WeekLows()
     print '52 week low companies for', date, 'are', tickers
     return tikers
 
-def GetListFromFile(name)
+def GetListFromFile(name):
     list = []
     file1 = open(name + '.csv')
     for line in file1:
