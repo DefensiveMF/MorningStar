@@ -135,3 +135,16 @@ def WriteToExcel(company,companyinfo,month,year):
     number += 1
     print 'added',companyinfo['name'],'to',month,year+'.xlsx'
     return;
+
+def Retrieve52WeekLows()
+    url = 'http://247wallst.com/investing/'
+    webdata = urllib.urlopen(url).read()
+    links = re.findall('href="(http:.*?-52-week-low-club/)"', webdata)
+    date = re.findall('\d{4}/\d{2}/\d{2}', links[0])[0]
+    url = links[0]
+    webdata = urllib.urlopen(url).read()
+    tickersnyse = re.findall('\(NYSE: (\w+)\)', webdata)
+    tickersnas = re.findall('\(NASDAQ: (\w+)\)', webdata)
+    tickers = tickersnyse + tickersnas
+    print '52 week low companies for', date, 'are', tickers
+    return tikers
