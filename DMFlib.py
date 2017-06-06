@@ -148,3 +148,11 @@ def Retrieve52WeekLows()
     tickers = tickersnyse + tickersnas
     print '52 week low companies for', date, 'are', tickers
     return tikers
+
+def GetListFromFile(name)
+    list = []
+    file1 = open(name + '.csv')
+    for line in file1:
+        company = re.findall('\w+', line)[0]
+        list.append(company)
+    return list
