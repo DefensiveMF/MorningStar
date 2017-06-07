@@ -1,4 +1,5 @@
-import openpyxl,json,re,urllib
+import openpyxl,json,re,urllib,xlrd
+from yahoo_finance import Share
 
 def IncomeStatement(company):
     urlbase = 'http://financials.morningstar.com/ajax/ReportProcess4CSV.html?t='  # base url to talk with morningstar
@@ -136,7 +137,7 @@ def WriteToExcel(company,companyinfo,month,year):
     print 'added',companyinfo['name'],'to',month,year+'.xlsx'
     return;
 
-def Retrieve52WeekLows()
+def Retrieve52WeekLows():
     url = 'http://247wallst.com/investing/'
     webdata = urllib.urlopen(url).read()
     links = re.findall('href="(http:.*?-52-week-low-club/)"', webdata)
@@ -147,4 +148,30 @@ def Retrieve52WeekLows()
     tickersnas = re.findall('\(NASDAQ: (\w+)\)', webdata)
     tickers = tickersnyse + tickersnas
     print '52 week low companies for', date, 'are', tickers
-    return tikers
+    return tickers
+
+def ReadFromExcel(file):
+    ticker_file = xlrd.open_workbook(file)
+    sheet1 = ticker_file.sheet_by_index(0)
+    tickers = sheet1.col_values(0)
+    return tickers
+
+def GetInfo(company):
+    companyinfo = {}
+    dictIS = IncomeStatement(company)
+    dictBS = BalanceSheet(company)
+    dictKR = KeyRatios(company)
+    dictionaries = [dictIS, dictBS, dictKR]
+    companyinfo['EXR'] = ExchangeRate(dictIS['currency'])
+
+    # price and market capitalization
+    share = Share(company)
+    companyinfo['quote'] = share.get_price()
+    companyinfo['MC'] = float(share.get_market_cap()[:-1])
+    companyinfo['name'] = share.get_name()
+
+    for dictionary in dictionaries:  # merge dictionaries
+        companyinfo.update(dictionary)
+
+    return companyinfo
+
