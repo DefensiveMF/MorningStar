@@ -148,30 +148,13 @@ def Retrieve52WeekLows():
     tickersnas = re.findall('\(NASDAQ: (\w+)\)', webdata)
     tickers = tickersnyse + tickersnas
     print '52 week low companies for', date, 'are', tickers
-    return tickers
+	return tickers
 
-def ReadFromExcel(file):
-    ticker_file = xlrd.open_workbook(file)
-    sheet1 = ticker_file.sheet_by_index(0)
-    tickers = sheet1.col_values(0)
-    return tickers
 
-def GetInfo(company):
-    companyinfo = {}
-    dictIS = IncomeStatement(company)
-    dictBS = BalanceSheet(company)
-    dictKR = KeyRatios(company)
-    dictionaries = [dictIS, dictBS, dictKR]
-    companyinfo['EXR'] = ExchangeRate(dictIS['currency'])
-
-    # price and market capitalization
-    share = Share(company)
-    companyinfo['quote'] = share.get_price()
-    companyinfo['MC'] = float(share.get_market_cap()[:-1])
-    companyinfo['name'] = share.get_name()
-
-    for dictionary in dictionaries:  # merge dictionaries
-        companyinfo.update(dictionary)
-
-    return companyinfo
-
+def GetListFromFile(name):
+    list = []
+    file1 = open(name + '.csv')
+    for line in file1:
+        company = re.findall('\w+', line)[0]
+        list.append(company)
+    return list
