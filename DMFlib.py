@@ -136,23 +136,28 @@ def WriteToExcel(company,companyinfo,month,year):
     print 'added',companyinfo['name'],'to',month,year+'.xlsx'
     return;
 
-def Retrieve52WeekLows():
+def Retrieve52WeekLows(day,month):
     url = 'http://247wallst.com/investing/'
     webdata = urllib.urlopen(url).read()
     links = re.findall('href="(http:.*?-52-week-low-club/)"', webdata)
     date = re.findall('\d{4}/\d{2}/\d{2}', links[0])[0]
+    if date[5:]!=month+'/'+day:
+        print 'Error: There is no 52 week low article for',month+'/'+day,52'...yet'
+        return;
     url = links[0]
     webdata = urllib.urlopen(url).read()
     tickersnyse = re.findall('\(NYSE: (\w+)\)', webdata)
     tickersnas = re.findall('\(NASDAQ: (\w+)\)', webdata)
     tickers = tickersnyse + tickersnas
     print '52 week low companies for', date, 'are', tickers
-    return tikers
+    return tickers
 
 def GetListFromFile(name):
     list = []
     file1 = open(name + '.csv')
     for line in file1:
-        company = re.findall('\w+', line)[0]
+        try:company = re.findall('\w+', line)[0]
+        except:continue
         list.append(company)
+    if len(list)==0:print 'Error: List is empty.'
     return list
