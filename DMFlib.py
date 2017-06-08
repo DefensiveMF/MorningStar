@@ -1,4 +1,5 @@
-import openpyxl,json,re,urllib
+import openpyxl,json,re,urllib,xlrd
+from yahoo_finance import Share
 
 def IncomeStatement(company):
     urlbase = 'http://financials.morningstar.com/ajax/ReportProcess4CSV.html?t='  # base url to talk with morningstar
@@ -152,6 +153,8 @@ def Retrieve52WeekLows(day,month):
     print '52 week low companies for', date, 'are', tickers
     return tickers
 
+
+
 def GetListFromFile(name):
     list = []
     file1 = open(name + '.csv')
@@ -159,5 +162,31 @@ def GetListFromFile(name):
         try:company = re.findall('\w+', line)[0]
         except:continue
         list.append(company)
-    if len(list)==0:print 'Error: List is empty.'
+    if len(list) == 0: print 'Error: List is empty.'
     return list
+	
+def ReadFromExcel(file):
+    ticker_file = xlrd.open_workbook(file)
+    sheet1 = ticker_file.sheet_by_index(0)
+    tickers = sheet1.col_values(0)
+    return tickers
+
+def GetInfo(company):
+    companyinfo = {}
+    dictIS = IncomeStatement(company)
+    dictBS = BalanceSheet(company)
+    dictKR = KeyRatios(company)
+    dictionaries = [dictIS, dictBS, dictKR]
+    companyinfo['EXR'] = ExchangeRate(dictIS['currency'])
+
+    # price and market capitalization
+    share = Share(company)
+    companyinfo['quote'] = share.get_price()
+    companyinfo['MC'] = float(share.get_market_cap()[:-1])
+    companyinfo['name'] = share.get_name()
+
+    for dictionary in dictionaries:  # merge dictionaries
+        companyinfo.update(dictionary)
+
+    return companyinfo
+
