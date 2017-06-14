@@ -14,8 +14,12 @@ while True:
     if company=='lista': #hidden egg command to analyze several companies from a list
         list=DMFlib.GetListFromFile('lista')
     elif company=='52 week lows': #hidden egg command to get 52 week lows from 24/7 wall street
-        list=DMFlib.Retrieve52WeekLows()
+        list=DMFlib.Retrieve52WeekLows(day,month)
+    elif company=='52 week lows yesterday': #hidden egg command to get 52 week lows from yesterday's 24/7 wall street
+        list=DMFlib.Retrieve52WeekLows('0'+str(int(day)-1),month)
     else: list.append(company)
+
+    if list==None or len(list)==0:continue #if a list or the 52 week low article was not found... continue
 
     for company in list:
         try: #some companies fail
