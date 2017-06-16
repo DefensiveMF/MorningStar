@@ -4,7 +4,7 @@ from yahoo_finance import Share #we are going to need yahoo finance module
 date=re.findall('\S*? (\S{3,}) (\d{1,2}) .+?:.+?:.+? (\d{4})',time.ctime()) #get day (0-31), month and year
 month,day,year=date[0][0],date[0][1],date[0][2]
 
-print month, year
+print day, month, year
 errorlist=[]
 while True:
     company=raw_input('Enter company ID -> ')
@@ -14,9 +14,10 @@ while True:
     if company=='lista': #hidden egg command to analyze several companies from a list
         list=DMFlib.GetListFromFile('lista')
     elif company=='52 week lows': #hidden egg command to get 52 week lows from 24/7 wall street
-        list=DMFlib.Retrieve52WeekLows(day,month)
+        list=DMFlib.Retrieve52WeekLows(day,DMFlib.WMonthtoNMonth(month))
     elif company=='52 week lows yesterday': #hidden egg command to get 52 week lows from yesterday's 24/7 wall street
-        list=DMFlib.Retrieve52WeekLows('0'+str(int(day)-1),month)
+        if int(day)>9:list=DMFlib.Retrieve52WeekLows(str(int(day)-1),DMFlib.WMonthtoNMonth(month))
+        else:list=DMFlib.Retrieve52WeekLows('0'+str(int(day)-1),DMFlib.WMonthtoNMonth(month))
     else: list.append(company)
 
     if list==None or len(list)==0:continue #if a list or the 52 week low article was not found... continue

@@ -1,4 +1,4 @@
-import openpyxl,json,re,urllib,xlrd
+import openpyxl,json,re,urllib
 from yahoo_finance import Share
 
 def IncomeStatement(company):
@@ -142,8 +142,10 @@ def Retrieve52WeekLows(day,month):
     webdata = urllib.urlopen(url).read()
     links = re.findall('href="(http:.*?-52-week-low-club/)"', webdata)
     date = re.findall('\d{4}/\d{2}/\d{2}', links[0])[0]
-    if date[5:]!=month+'/'+day:
-        print 'Error: There is no 52 week low article for',month+'/'+day,52'...yet'
+    start=5
+    if month<10:start=6
+    if date[start:]!=str(month)+'/'+day:
+        print 'Error: There is no 52 week low article for',str(month)+'/'+day,'...yet'
         return;
     url = links[0]
     webdata = urllib.urlopen(url).read()
@@ -189,4 +191,13 @@ def GetInfo(company):
         companyinfo.update(dictionary)
 
     return companyinfo
+
+def WMonthtoNMonth(month):
+    i=1
+    for mth in ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dic']:
+        if month==mth:
+            month=i
+            break
+        i+=1
+    return month
 
